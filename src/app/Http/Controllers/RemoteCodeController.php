@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\DashBoard;
 use App\Models\RemoteCode;
 use App\Models\RemoteCategory;
+use App\Models\RemoteLog;
 use GuzzleHttp\Client;
 
 class RemoteCodeController extends Controller
@@ -53,6 +54,13 @@ class RemoteCodeController extends Controller
             $response = (new Client())->request("GET", $url, $parameter);
             $posts = $response->getBody();
             $posts = json_decode($posts, true);
+        }
+
+        {
+            $remoteLog = new RemoteLog();
+            $remoteLog->filename = $remoteInfo->filename;
+            $remoteLog->command = $remoteInfo->command;
+            $remoteLog->save();
         }
 
         // return redirect()->action('App\Http\Controllers\DashBoardController@remote', ['category_id' => $category_id]);

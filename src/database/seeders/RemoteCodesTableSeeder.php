@@ -122,5 +122,10 @@ class RemoteCodesTableSeeder extends Seeder
                 \App\Models\RemoteCategory::create($category);
             }
         }
+
+        {
+            // テーブルのクリア
+            DB::table('remote_logs')->truncate();
+        }
     }
 }
