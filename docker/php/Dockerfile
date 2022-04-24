@@ -1,23 +1,38 @@
-FROM php:7.3-fpm
+FROM php:7.2-fpm-alpine3.7
 COPY php.ini /usr/local/etc/php/
 
-RUN apt-get update \
-  && apt-get install -y zlib1g-dev libzip-dev mariadb-client vim \
-  && docker-php-ext-install zip pdo_mysql
-
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-ENV COMPOSER_ALLOW_SUPERUSER 1
-
-ENV COMPOSER_HOME /composer
-
-ENV PATH $PATH:/composer/vendor/bin
-
-RUN composer global require "laravel/installer"
-
-RUN curl -SL https://deb.nodesource.com/setup_14.x | bash
-RUN apt-get install -y nodejs && \
-  npm install -g npm@latest && \
-  npm install -g @vue/cli
-
-WORKDIR /var/www
+RUN apk --no-cache update && \
+    apk --no-cache upgrade && \
+    apk --no-cache add \
+    curl-dev \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    libxml2-dev \
+    zlib-dev \
+    pcre-dev \
+    g++ \
+    make \
+    autoconf \
+    openssl \
+    nodejs-npm \
+    bash \
+    vim \
+    git \
+  && docker-php-ext-install \
+    curl \
+    dom \
+    mbstring \
+    pdo \
+    pdo_mysql \
+    simplexml \
+    zip \
+    opcache \
+  && docker-php-ext-configure gd \
+    --with-freetype-dir=/usr/include/ \
+    --with-jpeg-dir=/usr/include/ \
+    --with-png-dir=/usr/include/ \
+  && docker-php-ext-install gd \
+  && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+  && chmod +x /usr/local/bin/composer \
+  && rm -rf /var/cache/apk/*
